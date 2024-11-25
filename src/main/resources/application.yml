@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: kafka
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9091
+      auto-offset-reset: latest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      #value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.github.vskrahul.kafka.model
+        interceptor.classes: com.github.vskrahul.kafka.interceptor.KafkaConsumerInterceptor
+        isolation.level: read_committed
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      bootstrap-servers: localhost:9091
+      properties:
+        acks: "all"
+        partition.key: 1
+        partitioner.class: org.apache.kafka.clients.producer.RoundRobinPartitioner
+        interceptor.classes: com.github.vskrahul.kafka.interceptor.KafkaProducerInterceptor
+      #spring will autoconfigure the KafkaTransactionManager bean and set to listener container
+      transaction-id-prefix: tx-
+    listener:
+      ack-mode: manual
+#      async-acks: true
+
+debug: false
+logging:
+  level:
+    org.springframework.kafka: info
+    org.springframework.transaction: trace
+    org.springframework.kafka.transaction: debug
+
